@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#484b54</color>
+    <color name="colorAccent">#FFC93C</color>
+    <color name="textColorPrimary">#555962</color>
+    <color name="white">#FFFFFF</color>
+    <color name="strong_pass_color">#00FF00</color>
+    <color name="medium_pass_color">#FFFF00</color>
+    <color name="weak_pass_color">#F57C00</color>
+</resources>

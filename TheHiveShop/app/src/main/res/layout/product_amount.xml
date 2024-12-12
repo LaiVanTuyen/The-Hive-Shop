@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+    <ImageView
+        android:id="@+id/btn_reduce"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/border"
+        android:src="@drawable/ic_baseline_remove" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/btn_increase"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/border"
+        android:src="@drawable/ic_baseline_add_24" />
+</LinearLayout>
