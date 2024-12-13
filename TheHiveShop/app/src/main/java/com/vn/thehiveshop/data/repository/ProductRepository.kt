@@ -9,12 +9,26 @@ import com.vn.thehiveshop.model.Product
 import kotlinx.coroutines.flow.Flow
 
 
-class ProductRepository() {
+class ProductRepository(private val hiveService: HiveService) {
 
+    // Function to get paginated products
     fun getAllProducts(): Flow<PagingData<Product>> = Pager(
-        config = PagingConfig(pageSize = NETWORK_PAGE_SIZE, enablePlaceholders = false),
-        pagingSourceFactory = { ProductPagingSource(HiveService.create()) }
+        config = PagingConfig(
+            pageSize = NETWORK_PAGE_SIZE,  // Configure how many items per page
+            enablePlaceholders = false  // Disable placeholders for a smoother experience
+        ),
+        pagingSourceFactory = { ProductPagingSource(hiveService) }  // Use the service directly
     ).flow
+
+    // Function to get all products without pagination
+    suspend fun getAllProduct(): List<Product> {
+        val response = hiveService.getAllProductsWithoutPaging()
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList() // Trả về danh sách nếu thành công, nếu không trả về rỗng
+        } else {
+            throw Exception("Error: ${response.code()}") // Thông báo lỗi nếu không thành công
+        }
+    }
 
 
     companion object {
