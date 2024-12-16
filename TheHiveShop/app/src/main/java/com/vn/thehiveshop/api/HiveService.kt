@@ -1,5 +1,7 @@
 package com.vn.thehiveshop.api
 
+import com.vn.thehiveshop.data.request.CartRequest
+import com.vn.thehiveshop.data.response.CartResponse
 import com.vn.thehiveshop.model.Product
 import com.vn.thehiveshop.model.UserModel
 import retrofit2.Response
@@ -7,8 +9,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface HiveService {
@@ -41,6 +45,20 @@ interface HiveService {
     // Cập nhật thông tin người dùng
     @PUT("/authentication/profile")
     suspend fun updateProfile(@Body user: UserModel): Response<UserModel>
+
+    @POST("/cart")
+    suspend fun addProductToCart(@Body request: CartRequest)
+
+    @GET("/cart/{email}")
+    suspend fun getCart(
+        @Path("email") email: String
+    ): CartResponse
+
+    @PATCH("/cart")
+    suspend fun updateItemAmount(@Body request: CartRequest)
+
+    @PUT("/cart")
+    suspend fun deleteItem(@Body request: CartRequest)
 
 
     companion object {
