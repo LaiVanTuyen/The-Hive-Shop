@@ -44,6 +44,10 @@ class ProductFragment : BaseFragment<FragmentProductBinding>(R.layout.fragment_p
         binding.sfProduct.setOnRefreshListener {
             refreshData()
         }
+
+        binding.productToolBar.setNavigationOnClickListener {
+            findNavController().navigate(R.id.action_productFragment_to_settingsFragment)
+        }
     }
 
     override fun initControls(view: View, savedInstanceState: Bundle?) {

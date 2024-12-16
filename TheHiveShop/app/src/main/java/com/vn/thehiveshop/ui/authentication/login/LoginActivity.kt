@@ -11,13 +11,18 @@ import android.util.Patterns
 import android.view.View
 import android.view.Window
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.vn.thehiveshop.Injection
+import com.vn.thehiveshop.MainActivity
 import com.vn.thehiveshop.R
 import com.vn.thehiveshop.base.BaseActivity
+import com.vn.thehiveshop.data.User
 import com.vn.thehiveshop.databinding.ActivityLoginBinding
+import com.vn.thehiveshop.model.UserModel
 import com.vn.thehiveshop.ui.authentication.AuthenticationViewModel
 import com.vn.thehiveshop.ui.authentication.register.SignUpActivity
+import com.vn.thehiveshop.utils.Resource
 
 class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
@@ -66,7 +71,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
         onTextChanged()
     }
 
-    private fun login() {
+    /*private fun login() {
         var isValidEmail = true
         var isValidPassword = true
         if (binding.edtEmail.text.isNullOrEmpty()) {
@@ -88,9 +93,113 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
         if (isValidEmail && isValidPassword) {
             // Xử lý đăng nhập
-//            authenticationViewModel.s
+            authenticationViewModel.signIn(
+                UserModel(
+                    binding.edtEmail.text.toString(),
+                    binding.edtPassword.text.toString(),
+                    "",
+                    true,
+                    "",
+                    "",
+                    false
+                )
+            ).observeForever {
+                it?.let { resources ->
+                    when (resources) {
+                        is Resource.Success ->{
+                            User.setNewUser(resources.data.body().email, resources.data.body().password)
+                        }
+                    }
+                }
+            }
+        }
+    }*/
+
+    private fun login() {
+
+        // Biến kiểm tra trạng thái hợp lệ của email và mật khẩu
+        val emailInput = binding.edtEmail.text.toString().trim()
+        val passwordInput = binding.edtPassword.text.toString().trim()
+        var isValid = true
+
+        // Kiểm tra email
+        when {
+            emailInput.isEmpty() -> {
+                binding.textInputEmail.error = resources.getString(R.string.empty_error)
+                isValid = false
+            }
+            !isValidEmail(emailInput) -> {
+                binding.textInputEmail.error = resources.getString(R.string.invalid_email)
+                isValid = false
+            }
+            else -> binding.textInputEmail.error = null // Xóa lỗi nếu hợp lệ
+        }
+
+        // Kiểm tra mật khẩu
+        if (passwordInput.isEmpty()) {
+            binding.textInputPassword.error = resources.getString(R.string.empty_error)
+            isValid = false
+        } else {
+            binding.textInputPassword.error = null // Xóa lỗi nếu hợp lệ
+        }
+
+        // Nếu cả email và mật khẩu hợp lệ thì thực hiện đăng nhập
+        if (isValid) {
+            val userModel = UserModel(
+                email = emailInput,
+                password = passwordInput,
+                dateOfBirth = "",
+                isMale = true,
+                phoneNumber = "",
+                address = "",
+                isAdmin = false
+            )
+
+            // Gọi ViewModel để xử lý đăng nhập
+            authenticationViewModel.signIn(userModel).observe(this) { resource ->
+                when (resource) {
+                    // Xử lý khi đăng nhập thành công
+                    is Resource.Success -> {
+                        resource.data?.let { response ->
+                            if (response.isSuccessful) {
+                                response.body()?.let { user ->
+                                    User.setNewUser(user)
+
+                                    // Lưu email vào SharedPreferences
+                                    sharedPreferences.edit().apply {
+                                        putString("EMAIL", user.email)
+                                        apply()
+                                    }
+
+                                    // Đóng loading và chuyển đến màn hình chính
+                                    dialogLoading.dismiss()
+                                    startActivity(Intent(this, MainActivity::class.java))
+                                    finish()
+                                }
+                            } else {
+                                // Xử lý khi response không thành công
+                                dialogLoading.dismiss()
+                                Toast.makeText(this, "Login failed: ${response.message()}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
+                    // Hiển thị trạng thái đang xử lý
+                    is Resource.Loading -> {
+                        dialogLoading.show()
+                    }
+
+                    // Xử lý khi có lỗi xảy ra
+                    is Resource.Error -> {
+                        dialogLoading.dismiss()
+                        Toast.makeText(this, resource.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
+
+
 
     private fun onTextChanged() {
         binding.edtEmail.addTextChangedListener(object : TextWatcher {
