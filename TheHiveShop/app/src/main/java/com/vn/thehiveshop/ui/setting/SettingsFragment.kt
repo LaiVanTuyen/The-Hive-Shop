@@ -11,7 +11,6 @@ import android.text.TextWatcher
 import android.util.Patterns
 import android.view.View
 import android.view.Window
-import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -78,16 +77,26 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(R.layout.fragment
         when (v?.id) {
             R.id.item_dob -> showDatePickerDialog()
             R.id.item_gender -> showGenderDialog()
-            R.id.item_phone_number -> showTextInputDialog(R.string.phone_number, binding.txtPhoneNumber.text.toString(), InputType.TYPE_CLASS_PHONE) { edtDialog ->
+            R.id.item_phone_number -> showTextInputDialog(
+                R.string.phone_number,
+                binding.txtPhoneNumber.text.toString(),
+                InputType.TYPE_CLASS_PHONE
+            ) { edtDialog ->
                 User.phoneNumber = edtDialog.text.toString()
-                updateUserInfo( User.phoneNumber, binding.txtPhoneNumber)
+                updateUserInfo(User.phoneNumber, binding.txtPhoneNumber)
             }
+
             R.id.item_address -> {
-                showTextInputDialog(R.string.address, binding.txtAddress.text.toString(), InputType.TYPE_CLASS_TEXT) { edtDialog ->
+                showTextInputDialog(
+                    R.string.address,
+                    binding.txtAddress.text.toString(),
+                    InputType.TYPE_CLASS_TEXT
+                ) { edtDialog ->
                     User.address = edtDialog.text.toString()
                     updateUserInfo(User.address, binding.txtAddress)
                 }
             }
+
             R.id.item_change_pass -> showChangePasswordDialog()
             R.id.item_logout -> {
                 showLogoutDialog()
@@ -100,8 +109,10 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(R.layout.fragment
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_confirm)
-        dialog.findViewById<MaterialTextView>(R.id.txt_dialog_title).text = getString(R.string.logout)
-        dialog.findViewById<MaterialTextView>(R.id.txt_dialog_message).text = getString(R.string.logout_message)
+        dialog.findViewById<MaterialTextView>(R.id.txt_dialog_title).text =
+            getString(R.string.logout)
+        dialog.findViewById<MaterialTextView>(R.id.txt_dialog_message).text =
+            getString(R.string.logout_message)
 
         dialog.findViewById<MaterialButton>(R.id.btn_confirm).setOnClickListener {
             User.logOut()
@@ -163,12 +174,28 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(R.layout.fragment
         ).show()
     }
 
-    private fun showTextInputDialog(dialogTitleRes: Int, currentText: String, inputType: Int, onConfirm: (TextInputEditText) -> Unit) {
-        showDialog(R.layout.dialog_add_text, getString(dialogTitleRes), currentText, inputType, onConfirm)
+    private fun showTextInputDialog(
+        dialogTitleRes: Int,
+        currentText: String,
+        inputType: Int,
+        onConfirm: (TextInputEditText) -> Unit
+    ) {
+        showDialog(
+            R.layout.dialog_add_text,
+            getString(dialogTitleRes),
+            currentText,
+            inputType,
+            onConfirm
+        )
     }
 
     private fun showChangePasswordDialog() {
-        showDialog(R.layout.dialog_change_pass, getString(R.string.change_password), "", InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) { edtDialog ->
+        showDialog(
+            R.layout.dialog_change_pass,
+            getString(R.string.change_password),
+            "",
+            InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+        ) { edtDialog ->
             User.password = edtDialog.text.toString()
             updateUserInfo(User.password, MaterialTextView(requireContext()))
         }
@@ -238,9 +265,11 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(R.layout.fragment
                     if (edtDialog2.text.toString().isNotEmpty()) {
                         textInputDialog2.error = null
                         // Kiểm tra độ mạnh của mật khẩu
-                        textInputDialog2.boxStrokeColor = checkStrengthPass(edtDialog2.text.toString())
+                        textInputDialog2.boxStrokeColor =
+                            checkStrengthPass(edtDialog2.text.toString())
                     } else {
-                        textInputDialog2.boxStrokeColor = resources.getColor(R.color.colorPrimaryDark)
+                        textInputDialog2.boxStrokeColor =
+                            resources.getColor(R.color.colorPrimaryDark)
                     }
                 }
 
@@ -272,7 +301,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(R.layout.fragment
 
             })
 
-            confirm.setOnClickListener{
+            confirm.setOnClickListener {
                 var validPass = true
 
                 if (edtDialog1.text.isNullOrEmpty()) {
@@ -319,13 +348,13 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(R.layout.fragment
             textInputDialog1.hint = dialogTitle
             edtDialog1.setText(content1)
             edtDialog1.inputType = inputType1
-            confirm.setOnClickListener{
+            confirm.setOnClickListener {
                 onConfirm(edtDialog1)
                 dialog.dismiss()
             }
         }
 
-        cancel.setOnClickListener{
+        cancel.setOnClickListener {
             dialog.dismiss()
         }
         dialog.show()
@@ -345,8 +374,12 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(R.layout.fragment
         }
 
         return when {
-            pass.length in 8..20 && !containDigit && containUpperCase && containLowerCase -> resources.getColor(R.color.medium_pass_color) // Mật khẩu trung bình
-            pass.length in 8..20 && containDigit && containUpperCase && containLowerCase -> resources.getColor(R.color.strong_pass_color)  // Mật khẩu mạnh
+            pass.length in 8..20 && !containDigit && containUpperCase && containLowerCase -> resources.getColor(
+                R.color.medium_pass_color
+            ) // Mật khẩu trung bình
+            pass.length in 8..20 && containDigit && containUpperCase && containLowerCase -> resources.getColor(
+                R.color.strong_pass_color
+            )  // Mật khẩu mạnh
             else -> resources.getColor(R.color.weak_pass_color)  // Mật khẩu yếu
         }
 

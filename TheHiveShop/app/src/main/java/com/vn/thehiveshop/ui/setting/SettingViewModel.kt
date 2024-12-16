@@ -1,7 +1,6 @@
 package com.vn.thehiveshop.ui.setting
 
 import android.content.Context
-import android.net.http.HttpException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.vn.thehiveshop.R
@@ -10,7 +9,6 @@ import com.vn.thehiveshop.model.UserModel
 import com.vn.thehiveshop.utils.HandleException
 import com.vn.thehiveshop.utils.Resource
 import kotlinx.coroutines.Dispatchers
-import java.io.IOException
 
 class SettingViewModel(
     private val settingRepository: SettingRepository,

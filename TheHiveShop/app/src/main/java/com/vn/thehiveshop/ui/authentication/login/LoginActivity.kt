@@ -57,8 +57,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
     }
 
 
-
-
     override fun initEvents() {
         binding.btnRegister.setOnClickListener {
             val intent: Intent = Intent(this, SignUpActivity::class.java)
@@ -128,10 +126,12 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                 binding.textInputEmail.error = resources.getString(R.string.empty_error)
                 isValid = false
             }
+
             !isValidEmail(emailInput) -> {
                 binding.textInputEmail.error = resources.getString(R.string.invalid_email)
                 isValid = false
             }
+
             else -> binding.textInputEmail.error = null // Xóa lỗi nếu hợp lệ
         }
 
@@ -180,7 +180,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                             } else {
                                 // Xử lý khi response không thành công
                                 dialogLoading.dismiss()
-                                Toast.makeText(this, "Login failed: ${response.message()}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this,
+                                    "Login failed: ${response.message()}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -199,7 +203,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
             }
         }
     }
-
 
 
     private fun onTextChanged() {
@@ -260,7 +263,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                 hideKeyboard(binding.edtPassword)
             }
         }
-
 
 
     }

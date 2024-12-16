@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.vn.thehiveshop.data.repository.SettingRepository
-import com.vn.thehiveshop.ui.product.ProductViewModel
 
 class SettingViewModelFactory(
     private val settingRepository: SettingRepository,
