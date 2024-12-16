@@ -47,6 +47,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
     override fun initControls(savedInstanceState: Bundle?) {
         binding.edtEmail.setText(sharedPreferences.getString("EMAIL", ""))
+        binding.edtPassword.setText(sharedPreferences.getString("PASSWORD", ""))
 
         dialogLoading.apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -117,7 +118,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
     private fun login() {
 
-        // Biến kiểm tra trạng thái hợp lệ của email và mật khẩu
         val emailInput = binding.edtEmail.text.toString().trim()
         val passwordInput = binding.edtPassword.text.toString().trim()
         var isValid = true
@@ -168,6 +168,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                                     // Lưu email vào SharedPreferences
                                     sharedPreferences.edit().apply {
                                         putString("EMAIL", user.email)
+                                        putString("PASSWORD", user.password)
                                         apply()
                                     }
 

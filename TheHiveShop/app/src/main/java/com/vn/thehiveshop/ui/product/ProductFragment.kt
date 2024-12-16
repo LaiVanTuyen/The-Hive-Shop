@@ -48,6 +48,17 @@ class ProductFragment : BaseFragment<FragmentProductBinding>(R.layout.fragment_p
         binding.productToolBar.setNavigationOnClickListener {
             findNavController().navigate(R.id.action_productFragment_to_settingsFragment)
         }
+        binding.productToolBar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.mnu_cart -> {
+                    // Example: Show cart
+                    Toast.makeText(requireContext(), "Show cart", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_productFragment_to_cartFragment)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     override fun initControls(view: View, savedInstanceState: Bundle?) {
