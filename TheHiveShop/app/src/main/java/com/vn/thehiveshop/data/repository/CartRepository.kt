@@ -1,6 +1,7 @@
 package com.vn.thehiveshop.data.repository
 
 import com.vn.thehiveshop.api.HiveService
+import com.vn.thehiveshop.data.User
 import com.vn.thehiveshop.data.request.CartRequest
 
 class CartRepository(private val hiveService: HiveService) {

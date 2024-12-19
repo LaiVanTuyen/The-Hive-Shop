@@ -1,5 +1,6 @@
 package com.vn.thehiveshop.ui.cart
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,23 +11,21 @@ class CartAdapter(
     private val onItemLongClick: (ItemInCart) -> Boolean,
     private val updateAmount: (ItemInCart, () -> Unit) -> Unit
 ) : RecyclerView.Adapter<CartViewHolder>() {
-
-    private val cartItems = mutableListOf<ItemInCart>()
-
-    fun updateCart(newCart: List<ItemInCart>) {
-        cartItems.clear()
-        cartItems.addAll(newCart)
-        notifyDataSetChanged()
-    }
+    var cart: List<ItemInCart> = listOf()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return CartViewHolder.create(inflater, parent, onItemClick, onItemLongClick, updateAmount)
     }
 
-    override fun getItemCount(): Int = cartItems.size
+    override fun getItemCount(): Int = cart.size
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        holder.onBind(cartItems[position])
+        holder.onBind(cart[position])
     }
 }

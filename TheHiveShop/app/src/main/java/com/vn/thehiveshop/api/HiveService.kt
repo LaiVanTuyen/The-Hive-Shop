@@ -25,12 +25,6 @@ interface HiveService {
     @POST("/authentication/signin")
     suspend fun signIn(@Body user: UserModel): Response<UserModel> // Trả về dữ liệu người dùng
 
-    /*@GET("/products?page&per_page")
-    suspend fun getAllProducts(
-        @Query("page") page: Int,
-        @Query("per_page") itemPerPage: Int
-    ): List<Product>*/
-
     @GET("/products")
     suspend fun getAllProducts(
         @Query("page") page: Int = 1,
