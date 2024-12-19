@@ -47,6 +47,10 @@
     <string name="delete">Delete</string>
     <string name="delete_message">Are you sure you want to delete?</string>
     <string name="logout_message">Are you sure you want to logout?</string>
+    <string name="unknown_error">Lỗi không xác định, vui lòng thử lại sau.</string>
+    <string name="total_amount">Total: $%.2f</string>
+
+
 
     <array name="gender">
         <item name="male">Male</item>

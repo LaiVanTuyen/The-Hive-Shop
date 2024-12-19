@@ -1,19 +1,15 @@
 package com.vn.thehiveshop.ui.product
 
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.PagingData
-import androidx.paging.filter
 import androidx.recyclerview.widget.GridLayoutManager
+import com.vn.thehiveshop.Injection
+import com.vn.thehiveshop.R
+import com.vn.thehiveshop.base.BaseFragment
 import com.vn.thehiveshop.databinding.FragmentProductBinding
 import com.vn.thehiveshop.model.Product
 import kotlinx.coroutines.Job
@@ -21,15 +17,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class ProductFragment : Fragment() {
+class ProductFragment : BaseFragment<FragmentProductBinding>(R.layout.fragment_product) {
 
-    private var _binding: FragmentProductBinding? = null
-    private val binding get() = _binding!!
 
+    // Khởi tạo ViewModel với Factory để truyền ProductRepository
     private val productViewModel: ProductViewModel by lazy {
         ViewModelProvider(
             this,
-            ProductViewModel.ProductViewModelFactory()
+            Injection.provideProductViewModelFactory()
         )[ProductViewModel::class.java]
     }
 
@@ -39,22 +34,7 @@ class ProductFragment : Fragment() {
 
     private var job: Job? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentProductBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initControls()
-        initEvents()
-    }
-
-    private fun initEvents() {
+    override fun initEvents() {
         binding.retryButton.setOnClickListener {
             hideErrorState()
             refreshData()
@@ -64,10 +44,24 @@ class ProductFragment : Fragment() {
         binding.sfProduct.setOnRefreshListener {
             refreshData()
         }
+
+        binding.productToolBar.setNavigationOnClickListener {
+            findNavController().navigate(R.id.action_productFragment_to_settingsFragment)
+        }
+        binding.productToolBar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.mnu_cart -> {
+                    // Example: Show cart
+                    Toast.makeText(requireContext(), "Show cart", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_productFragment_to_cartFragment)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
-
-    private fun initControls() {
+    override fun initControls(view: View, savedInstanceState: Bundle?) {
         binding.rvProduct.apply {
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(requireContext(), 2)
@@ -83,12 +77,17 @@ class ProductFragment : Fragment() {
     private fun refreshData() {
         job?.cancel()
         job = viewLifecycleOwner.lifecycleScope.launch {
-            productViewModel.getAllProduct()
+            productViewModel.getAllProducts()
                 .catch { e ->
                     binding.sfProduct.isRefreshing = false
-                    showErrorState("Error: ${e.message}")
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT)
-                        .show()
+                    // Xử lý trạng thái lỗi khi không có kết nối hoặc lỗi khác xảy ra
+                    showErrorState("Lỗi: ${e.message}")
+                    // Bạn có thể thêm kiểm tra cụ thể cho lỗi mạng ở đây:
+                    if (e is java.net.UnknownHostException || e is java.net.ConnectException) {
+                        // Nếu lỗi là lỗi kết nối, bạn có thể hiển thị thông báo cụ thể
+                        showErrorState("Không có kết nối internet. Vui lòng kiểm tra lại mạng.")
+                    }
+                    Toast.makeText(requireContext(), "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
                 .collectLatest { pagingData ->
                     binding.sfProduct.isRefreshing = false
@@ -100,38 +99,40 @@ class ProductFragment : Fragment() {
                             .show()
                     } else {
                         hideErrorState()
-                        Toast.makeText(requireContext(), "Get data success", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Data fetched successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
         }
     }
 
 
-    /*private fun getProductFromApi() {
-        job?.cancel()
-        job = viewLifecycleOwner.lifecycleScope.launch {
-            productViewModel.getAllProduct()
-                .catch { e ->
+    /*private fun refreshData() {
+        productViewModel.getAllProduct().observe(viewLifecycleOwner) {
+            binding.retryButton.isVisible = (it !is Resource.Loading && it !is Resource.Success)
+            binding.emptyList.isVisible = (it !is Resource.Loading && it !is Resource.Success)
+            binding.rvProduct.isVisible = it is Resource.Success
+
+            when (it) {
+                is Resource.Success -> {
+                    // Use submitData to pass data to the adapter
+                    val pagingData = PagingData.from(it.data)
+                    productAdapter.submitData(lifecycle, pagingData)
                     binding.sfProduct.isRefreshing = false
-                    showErrorState("Error: ${e.message}")
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT)
-                        .show()
                 }
-                .collectLatest { pagingData ->
+
+                is Resource.Error -> {
                     binding.sfProduct.isRefreshing = false
-                    productAdapter.submitData(pagingData)
-                    // Kiểm tra xem adapter có dữ liệu không sau khi submit
-                    if (productAdapter.itemCount == 0) {
-                        showErrorState("No results found")
-                        Toast.makeText(requireContext(), "No results found", Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        hideErrorState()
-                        Toast.makeText(requireContext(), "Get data success", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    // You can handle showing the error message here if needed
                 }
+
+                is Resource.Loading -> {
+                    binding.sfProduct.isRefreshing = true
+                }
+            }
         }
     }*/
 
@@ -155,11 +156,6 @@ class ProductFragment : Fragment() {
         Toast.makeText(requireContext(), "Clicked on: ${product.title}", Toast.LENGTH_SHORT).show()
         val action = ProductFragmentDirections.actionProductFragmentToProductDetailFragment(product)
         findNavController().navigate(action)
-/*        val bundle = bundleOf("PRODUCT_DETAIL" to product)
-        findNavController().navigate(
-            com.vn.thehiveshop.R.id.action_productFragment_to_productDetailFragment,
-            bundle
-        )*/
     }
 
 }
